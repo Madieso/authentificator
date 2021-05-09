@@ -1,0 +1,34 @@
+frontend:
+  url: http://localhost:3000
+
+#Mailing properties
+mail:
+  debug: true
+  transport:
+    protocol: smtp
+  smtp:
+    auth: true
+    starttls.enable: true
+    host: smtp.gmail.com
+    port: 587
+  sender:
+    email: loic.madies@gmail.com
+    password: wcomtrejcqtltnuy
+
+# Database
+db.driver: org.postgresql.Driver
+db.url: jdbc:postgresql://localhost:5432/authentificator
+db.username: authentificator
+db.password: authentificator
+
+# Hibernate
+hibernate:
+  dialect: org.hibernate.dialect.PostgreSQLDialect
+  show_sql: true
+  hbm2ddl.auto: update
+entitymanager.packagesToScan: com.lma.authentificator
+
+# Security
+jwt:
+  expiration.delay: 172800
+  unchecked.uri.list: /account/confirmRegister,/account/register,/account/login
