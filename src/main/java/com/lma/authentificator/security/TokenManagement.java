@@ -17,7 +17,7 @@ import io.jsonwebtoken.SignatureAlgorithm;
  */
 public class TokenManagement {
 
-	public TokenManagement(PublicKey publicKey, PrivateKey privateKey, int expirationDelay) {
+	public TokenManagement(final PublicKey publicKey, final PrivateKey privateKey, final int expirationDelay) {
 		super();
 		this.publicKey = publicKey;
 		this.privateKey = privateKey;

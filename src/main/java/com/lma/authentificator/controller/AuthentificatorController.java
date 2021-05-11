@@ -15,7 +15,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -25,6 +27,7 @@ import com.lma.authentificator.constantes.RestConstants;
 import com.lma.authentificator.hibernate.entity.UserEntity;
 import com.lma.authentificator.model.Login;
 import com.lma.authentificator.model.LoginInformations;
+import com.lma.authentificator.model.PublicUser;
 import com.lma.authentificator.model.Register;
 import com.lma.authentificator.model.ResponseRest;
 import com.lma.authentificator.security.TokenManagement;
@@ -80,7 +83,7 @@ public class AuthentificatorController {
 	 * @status 412: account not confirm
 	 */
 	@PostMapping("/login")
-	public ResponseEntity<?> login(@RequestBody Login login) throws Exception {
+	public ResponseEntity<?> login(@RequestBody final Login login) throws Exception {
 
 		if(login.isNullField()) {
 			return new ResponseEntity<>(new ResponseRest(RestConstants.ALL_FIELDS_MUST_BE_FILLED), HttpStatus.NOT_ACCEPTABLE);
@@ -125,7 +128,7 @@ public class AuthentificatorController {
 	 * @status 409: user already exists
 	 */
 	@PostMapping("/register")
-	public ResponseEntity<?> register(@RequestBody Register register) throws Exception {
+	public ResponseEntity<?> register(@RequestBody final Register register) throws Exception {
 
 		if(register.isNullField()) {
 			return new ResponseEntity<>(new ResponseRest(RestConstants.ALL_FIELDS_MUST_BE_FILLED), HttpStatus.NOT_ACCEPTABLE);
@@ -162,7 +165,7 @@ public class AuthentificatorController {
 	 * @status 406: user doesn't exists
 	 */
 	@PostMapping("/confirmRegister")
-	public ResponseEntity<?> confirmRegister(@RequestParam(required = false, value="uuid") String uuid) throws Exception {
+	public ResponseEntity<?> confirmRegister(@RequestParam(required = false, value="uuid") final String uuid) throws Exception {
 
 		final UserEntity user = this.userService.findByUuid(uuid);
 
@@ -194,7 +197,7 @@ public class AuthentificatorController {
 	 * @throws Exception the exception
 	 */
 	@PostMapping("/langage")
-	public ResponseEntity<?> changeLangage(HttpServletRequest request, @RequestParam(required = false, value="langage") String langage) throws Exception {
+	public ResponseEntity<?> changeLangage(final HttpServletRequest request, @RequestParam(required = false, value="langage") final String langage) throws Exception {
 
 		final String username = (String) request.getAttribute("username");
 
@@ -204,6 +207,58 @@ public class AuthentificatorController {
 		this.userService.save(user);
 
 		return new ResponseEntity<>(user, HttpStatus.OK);
+	}
+
+	/**
+	 * Register.
+	 *
+	 * @param register the register
+	 * @return the response entity
+	 * @throws Exception the exception
+	 * @status 403: pseudo already exists
+	 * @status 406: bad fields body
+	 * @status 409: user already exists
+	 */
+	@PutMapping
+	public ResponseEntity<?> updateAccount(final HttpServletRequest request, @RequestBody final PublicUser publicUser) throws Exception {
+
+		final String username = (String) request.getAttribute("username");
+
+		final UserEntity entity = this.userService.findByPseudo(username);
+
+		if(publicUser.getEmail() != null) {
+			entity.setEmail(publicUser.getEmail());
+		}
+
+		if(publicUser.getFirstName() != null) {
+			entity.setFirstName(publicUser.getFirstName());
+		}
+
+		if(publicUser.getLastName() != null) {
+			entity.setLastName(publicUser.getLastName());
+		}
+
+		if(publicUser.getLangage() != null) {
+			entity.setLangage(publicUser.getLangage());
+		}
+
+		if(publicUser.getPassword() != null) {
+			// Encrypt password
+			final Cipher cipher = Cipher.getInstance("RSA");
+			cipher.init(Cipher.ENCRYPT_MODE, this.privateKey);
+			entity.setPassword(cipher.doFinal(publicUser.getPassword().getBytes()));
+		}
+
+		this.userService.save(entity);
+
+		return new ResponseEntity<>(publicUser, HttpStatus.OK);
+	}
+
+	@GetMapping
+	public ResponseEntity<?> getAccountInfo(final HttpServletRequest request) throws Exception {
+
+		final String username = (String) request.getAttribute("username");
+		return new ResponseEntity<>(new PublicUser(this.userService.findByPseudo(username)), HttpStatus.OK);
 	}
 
 }
