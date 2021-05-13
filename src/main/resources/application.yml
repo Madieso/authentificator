@@ -1,5 +1,5 @@
 frontend:
-  url: http://localhost:3000
+  url: https://humrates.ew.r.appspot.com
 
 #Mailing properties
 mail:
@@ -16,10 +16,14 @@ mail:
     password: wcomtrejcqtltnuy
 
 # Database
-db.driver: org.postgresql.Driver
-db.url: jdbc:postgresql://localhost:5432/authentificator
-db.username: authentificator
-db.password: authentificator
+#db.driver: org.postgresql.Driver
+#db.url: jdbc:postgresql://35.240.76.51:5432/authentificator
+#db.username: authentificator
+#db.password: authentificator
+
+spring: 
+  profiles:
+    active: postgresql
 
 # Hibernate
 hibernate:

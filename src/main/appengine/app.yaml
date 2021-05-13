@@ -1,0 +1,20 @@
+runtime: java11
+instance_class: F4_1G
+service: authentificator
+env_variables:
+  SPRING_PROFILES_ACTIVE: "gcp,mysql"
+
+handlers:
+- url: /.*
+  static_dir: /.*
+  http_headers:
+    Access-Control-Allow-Origin: https://humrates.ew.r.appspot.com
+
+resources:
+  cpu: 2
+  memory_gb: 2
+  disk_size_gb: 10
+  volumes:
+  - name: authentificator1
+    volume_type: tmpfs
+    size_gb: 0.5
