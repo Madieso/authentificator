@@ -16,14 +16,21 @@ mail:
     password: wcomtrejcqtltnuy
 
 # Database
-#db.driver: org.postgresql.Driver
-#db.url: jdbc:postgresql://35.240.76.51:5432/authentificator
-#db.username: authentificator
-#db.password: authentificator
+db.driver: org.postgresql.Driver
+db.url: jdbc:postgresql:///authentificator?cloudSqlInstance=humrates:europe-west1:global-db&socketFactory=com.google.cloud.sql.postgres.SocketFactory
+db.username: authentificator
+db.password: authentificator
 
 spring: 
   profiles:
     active: postgresql
+  cloud:
+    gcp.sql.database-name: authentificator
+    gcp.sql.instance-connection-name: humrates:europe-west1:global-db
+  datasource:
+    username: authentificator
+    password: authentificator
+    hikari.maximum-pool-size: 10
 
 # Hibernate
 hibernate:
